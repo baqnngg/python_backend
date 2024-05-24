@@ -13,10 +13,10 @@ def signUp():
     app.idCnt += 1
     return jsonify(newUser)
 
-
-@app.route("/check-users", methods=['GET'])
-def check_users():
-    return app.users
+# 유저 확인
+# @app.route("/check-users", methods=['GET'])
+# def check_users():
+#     return app.users
 
 
 @app.route("/post", methods=['POST'])
@@ -36,9 +36,29 @@ def post():
     })
     return '성공', 200
 
-@app.route("/check-tweet", methods=['GET'])
-def check_tweet():
-    return app.posts
+# 메세지 확인
+# @app.route("/check-tweet", methods=['GET'])
+# def check_tweet():
+#     return app.posts
+
+
+@app.route("/follow", methods=['POST'])
+def follow():
+    payload = request.json
+    userID = int(payload['id'])
+    userIDtoFollow = int(payload['follow'])
+
+    if userID not in app.users or userIDtoFollow not in app.users:
+        return '사용자가 존재하지 않습니다.', 400
+    
+    user = app.users[userID]
+    if user.get('follow'):
+        user['follow'].append(userIDtoFollow)
+        user['follow'] = list(set(user['follow']))
+    else:
+        user['follow'] = [userIDtoFollow]
+    return jsonify(user)
+
 
 if __name__ =='__main__':
     app.run(debug=True)
