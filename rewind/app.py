@@ -14,9 +14,9 @@ def signUp():
     return jsonify(newUser)
 
 # 유저 확인
-# @app.route("/check-users", methods=['GET'])
-# def check_users():
-#     return app.users
+@app.route("/check-users", methods=['GET'])
+def check_users():
+    return app.users
 
 
 @app.route("/post", methods=['POST'])
@@ -57,6 +57,23 @@ def follow():
         user['follow'] = list(set(user['follow']))
     else:
         user['follow'] = [userIDtoFollow]
+    return jsonify(user)
+
+
+@app.route("/unfollow", methods=['POST'])
+def unfollow():
+    payload = request.json
+    userID = int(payload['id'])
+    userIdTofollow = int(payload['unfollow'])
+    if (userID or userIdTofollow) not in app.users:
+        return '사용자가 존재하지 않습니다.'
+    user = app.users[userID]
+    if user.get('follow'):
+        try: user['follow'].remove(userIdTofollow)
+        except: pass
+    else:
+        user['follow'] = []
+
     return jsonify(user)
 
 
